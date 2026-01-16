@@ -11,7 +11,7 @@
     let
       # This overlay connects your default.nix to the Nix package set
       hello_world_overlay = final: prev: {
-        hellolib = input.hellolib.package.${final.system}.default;
+        hellolib = inputs.hellolib.packages.${final.system}.default;
         helloapp = final.callPackage ./default.nix { };
       };
 
