@@ -4,13 +4,14 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     utils.url = "github:numtide/flake-utils";
+    hellolib.url = "github:ddlgmx/hellolib";
   };
 
   outputs = { self, nixpkgs, utils }:
     let
       # This overlay connects your default.nix to the Nix package set
       hello_world_overlay = final: prev: {
-        hellolib = final.callPackage ./hellolib.nix { };
+        hellolib = input.hellolib.package.${final.system}.default;
         helloapp = final.callPackage ./default.nix { };
       };
 
