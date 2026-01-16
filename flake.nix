@@ -1,42 +1,18 @@
 {
-  description = "HyTech Lab 2 - Part 1";
+  description = "A shared hello world library";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    utils.url = "github:numtide/flake-utils";
-    hellolib.url = "github:ddlgmx/hellolib";
   };
 
-  outputs = { self, nixpkgs, utils }:
+  outputs = { self, nixpkgs }:
     let
-      # This overlay connects your default.nix to the Nix package set
-      hello_world_overlay = final: prev: {
-        hellolib = inputs.hellolib.packages.${final.system}.default;
-        helloapp = final.callPackage ./default.nix { };
-      };
-
-      my_overlays = [ hello_world_overlay ];
-
-      # This is specifically for your MacBook Pro
-      pkgs = import nixpkgs {
-        system = "aarch64-darwin";
-        overlays = [ self.overlays.default ];
-      };
+      # Use your Mac system
+      system = "aarch64-darwin";
+      pkgs = nixpkgs.legacyPackages.${system};
     in
     {
-      overlays.default = nixpkgs.lib.composeManyExtensions my_overlays;
-
-      packages.aarch64-darwin = {
-        default = pkgs.helloapp;
-      };
-
-      devShells.aarch64-darwin.default = pkgs.mkShell {
-        name = "nix-devshell";
-        packages = with pkgs; [
-          cmake
-          hellolib
-          helloapp
-        ];
-      };
+      # This is the ONLY thing a library flake needs to output
+      packages.${system}.default = pkgs.callPackage ./hellolib.nix { };
     };
 }
